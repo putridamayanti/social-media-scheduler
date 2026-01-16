@@ -66,7 +66,7 @@ func (w *Worker) Run(ctx context.Context) error {
 			continue
 		}
 		if !locked {
-			log.Printf("Skipping lock for: %s %s\n", postId)
+			log.Printf("Skipping lock for: %s \n", postId)
 			continue
 		}
 
