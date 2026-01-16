@@ -1,4 +1,4 @@
-import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
+import {Field, FieldDescription, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useFormik} from "formik";
@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {convertDateTimeToLocalWithFormat, joinDateAndTime} from "@/lib/helpers";
 import {useRouter} from "next/navigation";
+import * as Yup from "yup";
 
 interface PostFormType {
     data: any | null,
@@ -41,16 +42,26 @@ export default function PostForm(props: PostFormType) {
     const { data, onClose } = props;
     const router = useRouter();
 
-    const formik = useFormik({
+    const validationSchema = Yup.object({
+        title: Yup.string()
+            .required("Title is required"),
+        content: Yup.string()
+            .required("Content is required"),
+        channel: Yup.string()
+            .required("Channel is required"),
+    });
+
+    const formik: any = useFormik({
         initialValues: {
-            title: data?.title ?? 'Morning',
-            content: data?.content ?? 'Good morning Twitter 👋',
-            channel: data?.channel ?? 'twitter',
+            title: data?.title ?? '',
+            content: data?.content ?? '',
+            channel: data?.channel ?? '',
             scheduled_at: data?.scheduled_at ?? undefined,
             scheduled_time: data?.scheduled_at ? convertDateTimeToLocalWithFormat(data?.scheduled_at, 'hh:mm:ss') : '00:00:00',
             status: 'scheduled'
         },
         enableReinitialize: true,
+        validationSchema,
         onSubmit: (values: PostFormRequestType) => handleSubmit(values)
     })
 
@@ -76,22 +87,32 @@ export default function PostForm(props: PostFormType) {
                     <FieldLabel htmlFor="title">Title</FieldLabel>
                     <Input
                         id="title"
-                        required
                         name="title"
                         onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         value={formik.values.title}
                     />
+                    {formik.touched.title && formik.errors.title && (
+                        <FieldDescription className="text-red-500 text-sm mt-1">
+                            {formik.errors.title}
+                        </FieldDescription>
+                    )}
                 </Field>
                 <Field>
                     <FieldLabel htmlFor="content">Content</FieldLabel>
                     <Textarea
                         id="content"
-                        required
                         rows={6}
                         name="content"
                         onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         value={formik.values.content}
                     />
+                    {formik.touched.content && formik.errors.content && (
+                        <FieldDescription className="text-red-500 text-sm mt-1">
+                            {formik.errors.content}
+                        </FieldDescription>
+                    )}
                 </Field>
                 <Field>
                     <FieldLabel>Channel</FieldLabel>
@@ -103,11 +124,19 @@ export default function PostForm(props: PostFormType) {
                                 className="capitalize"
                                 variant={formik.values.channel === e ? 'default' : 'outline'}
                                 size="sm"
-                                onClick={() => formik.setFieldValue('channel', e)}>
+                                onClick={() => {
+                                    formik.setFieldValue('channel', e);
+                                    formik.setFieldTouched('channel', true, false);
+                                }}>
                                 {e}
                             </Button>
                         ))}
                     </div>
+                    {formik.touched.channel && formik.errors.channel && (
+                        <FieldDescription className="text-red-500 text-sm mt-1">
+                            {formik.errors.channel}
+                        </FieldDescription>
+                    )}
                 </Field>
                 <Field>
                     <FieldLabel htmlFor="scheduled_at">Schedule for</FieldLabel>

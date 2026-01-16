@@ -26,12 +26,12 @@ func (s *AuthService) Login(ctx context.Context, request dtos.LoginRequest) (*mo
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Incorrect Password!")
 	}
 
 	session, err := s.authRepo.CreateSession(ctx, user.ID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Something Wrong!")
 	}
 
 	return session, nil

@@ -19,6 +19,7 @@ Users can schedule posts for future publishing; a background worker reliably pub
 * Time-zone safe scheduling (UTC storage)
 * Clean separation of API & worker 
 * SSR-friendly Next.js frontend
+* Rate Limiter
 
 ## Design Decision
 

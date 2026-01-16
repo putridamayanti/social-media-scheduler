@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"golang.org/x/time/rate"
 	"log"
 	"os"
 	"social-media-scheduler/internal/db"
@@ -13,6 +14,7 @@ import (
 	"social-media-scheduler/internal/queue"
 	"social-media-scheduler/internal/repositories"
 	"social-media-scheduler/internal/services"
+	"time"
 )
 
 func main() {
@@ -63,6 +65,10 @@ func main() {
 	r.Use(gin.Recovery())
 
 	r.Use(cors.Default())
+
+	// Rate Limiter
+	limiter := middleware.NewRateLimiter(rate.Every(time.Second/2), 5, 5*time.Minute)
+	r.Use(limiter.Middleware())
 
 	api := r.Group("/api")
 	{

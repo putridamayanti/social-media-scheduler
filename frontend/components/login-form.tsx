@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input"
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {useRouter} from "next/navigation";
+import {Alert, AlertTitle} from "@/components/ui/alert";
+import {AlertCircleIcon} from "lucide-react";
 
 interface LoginRequest {
   email: string;
@@ -38,7 +40,7 @@ export function LoginForm({
       .min(6, "Password must be at least 6 characters")
       .required("Password is required"),
   });
-  const formik = useFormik({
+  const formik: any = useFormik({
     initialValues: {
       email: '',
       password: ''
@@ -55,6 +57,8 @@ export function LoginForm({
     const res = await resp.json();
     if (resp.status === 200) {
       return router.push('/dashboard')
+    } else if (res?.error) {
+      formik.setFieldError('root', res?.error);
     }
   };
 
@@ -68,6 +72,12 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {formik.errors.root && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircleIcon />
+                <AlertTitle>{formik.errors.root}</AlertTitle>
+              </Alert>
+          )}
           <form onSubmit={formik.handleSubmit}>
             <FieldGroup>
               <Field>
