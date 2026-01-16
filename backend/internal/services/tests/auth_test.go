@@ -35,6 +35,11 @@ func (m *MockAuthRepo) CreateSession(ctx context.Context, userId uuid.UUID) (*mo
 	return args.Get(0).(*models.Session), args.Error(1)
 }
 
+func (m *MockAuthRepo) RemoveSession(ctx context.Context, id string) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
+}
+
 func TestAuthService_Login_Success(t *testing.T) {
 	userRepo := new(MockUserRepo)
 	authRepo := new(MockAuthRepo)
