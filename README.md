@@ -89,6 +89,13 @@ Background Worker
 `go test internal/queue`
 
 
+## Demo Video
+
+### Setup and demo video
+
+https://youtu.be/xVHf_lFjDeE
+
+
 # 🙌 Final Notes
 
 This project prioritizes correctness, reliability, and clarity over feature breadth.
