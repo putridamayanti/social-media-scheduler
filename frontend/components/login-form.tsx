@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {useFormik} from "formik";
+import * as Yup from "yup";
 import {useRouter} from "next/navigation";
 
 interface LoginRequest {
@@ -29,11 +30,20 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+  });
   const formik = useFormik({
     initialValues: {
-      email: 'aliceacosta@example.com',
-      password: 'Aliceacosta123'
+      email: '',
+      password: ''
     },
+    validationSchema,
     onSubmit: values => handleLogin(values)
   })
 
@@ -66,11 +76,16 @@ export function LoginForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  required
                   name="email"
                   onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.email}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <FieldDescription className="text-red-500 text-sm mt-1">
+                    {formik.errors.email}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -79,10 +94,15 @@ export function LoginForm({
                 <Input
                     id="password"
                     type="password"
-                    required
                     name="password"
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.password}/>
+                {formik.touched.password && formik.errors.password && (
+                  <FieldDescription className="text-red-500 text-sm mt-1">
+                    {formik.errors.password}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <Button type="submit">Login</Button>

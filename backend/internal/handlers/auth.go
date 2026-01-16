@@ -4,19 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"social-media-scheduler/internal/dtos"
-	"social-media-scheduler/internal/repositories"
 	"social-media-scheduler/internal/services"
 )
 
 type AuthHandler struct {
-	userRepo *repositories.UserRepository
-	authRepo *repositories.AuthRepository
-
 	authService *services.AuthService
 }
 
-func NewAuthHandler(userRepo *repositories.UserRepository, authRepo *repositories.AuthRepository, authService *services.AuthService) *AuthHandler {
-	return &AuthHandler{userRepo: userRepo, authRepo: authRepo, authService: authService}
+func NewAuthHandler(authService *services.AuthService) *AuthHandler {
+	return &AuthHandler{authService: authService}
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
@@ -56,8 +52,13 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
-	id := c.Param("id")
-	err := h.authRepo.RemoveSession(c.Request.Context(), id)
+	userIdStr, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+		return
+	}
+
+	err := h.authService.Logout(c.Request.Context(), userIdStr.(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

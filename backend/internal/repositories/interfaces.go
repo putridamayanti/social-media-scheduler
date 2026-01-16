@@ -13,6 +13,7 @@ type UserRepositoryInterface interface {
 
 type AuthRepositoryInterface interface {
 	CreateSession(ctx context.Context, userId uuid.UUID) (*models.Session, error)
+	RemoveSession(ctx context.Context, id string) error
 }
 
 type PostRepositoryInterface interface {

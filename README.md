@@ -65,10 +65,15 @@ score → scheduled_at (Unix timestamp)
 `docker-compose up --build`
 
 ### Services started:
+
 Go API → http://localhost:8080
+
 Next.js Frontend → http://localhost:3000
+
 PostgreSQL
+
 Redis
+
 Background Worker
 
 

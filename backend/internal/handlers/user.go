@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"social-media-scheduler/internal/dtos"
 	"social-media-scheduler/internal/models"
-	"social-media-scheduler/internal/repositories"
+	"social-media-scheduler/internal/services"
 )
 
 type UserHandler struct {
-	repo *repositories.UserRepository
+	service *services.UserService
 }
 
-func NewUserHandler(repo *repositories.UserRepository) *UserHandler {
-	return &UserHandler{repo: repo}
+func NewUserHandler(service *services.UserService) *UserHandler {
+	return &UserHandler{service: service}
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
@@ -33,7 +33,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 		Password: string(hashedPassword),
 	}
 
-	err = h.repo.Create(c.Request.Context(), user)
+	err = h.service.CreateUser(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -48,7 +48,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 }
 
 func (h *UserHandler) GetAll(c *gin.Context) {
-	users, err := h.repo.GetAll(c.Request.Context())
+	users, err := h.service.GetAllUsers(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -60,7 +60,7 @@ func (h *UserHandler) GetAll(c *gin.Context) {
 func (h *UserHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
 
-	user, err := h.repo.GetById(c.Request.Context(), id)
+	user, err := h.service.GetUserById(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -89,7 +89,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 		updates["email"] = *request.Email
 	}
 
-	err = h.repo.Update(c.Request.Context(), id, updates)
+	err = h.service.UpdateUser(c.Request.Context(), id, updates)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -102,7 +102,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 func (h *UserHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	err := h.repo.Delete(c.Request.Context(), id)
+	err := h.service.DeleteUser(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import {useRouter} from "next/navigation";
 import {useFormik} from "formik";
+import * as Yup from "yup";
 
 interface LoginRequest {
   email: string;
@@ -30,12 +31,23 @@ export function SignupForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .required("Full name is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+  });
   const formik = useFormik({
     initialValues: {
-      name: 'Anita Williams',
-      email: 'anitawilliams@example.com',
-      password: 'Anitawilliams123'
+      name: '',
+      email: '',
+      password: ''
     },
+    validationSchema,
     onSubmit: values => handleRegister(values)
   })
 
@@ -69,10 +81,15 @@ export function SignupForm({
                     id="name"
                     type="text"
                     placeholder="John Doe"
-                    required
                     name="name"
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.name}/>
+                {formik.touched.name && formik.errors.name && (
+                  <FieldDescription className="text-red-500 text-sm mt-1">
+                    {formik.errors.name}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -80,11 +97,16 @@ export function SignupForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  required
                   name="email"
                   onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.email}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <FieldDescription className="text-red-500 text-sm mt-1">
+                    {formik.errors.email}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <Field>
@@ -92,14 +114,19 @@ export function SignupForm({
                   <Input
                       id="password"
                       type="password"
-                      required
                       name="password"
                       onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       value={formik.values.password}/>
                 </Field>
                 <FieldDescription>
                   Must be at least 8 characters long.
                 </FieldDescription>
+                {formik.touched.password && formik.errors.password && (
+                  <FieldDescription className="text-red-500 text-sm mt-1">
+                    {formik.errors.password}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <Button type="submit">Create Account</Button>

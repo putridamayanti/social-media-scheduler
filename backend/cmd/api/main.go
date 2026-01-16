@@ -49,12 +49,13 @@ func main() {
 	// Define handlers
 	authRepository := repositories.NewAuthRepository(database)
 	authService := services.NewAuthService(authRepository, repositories.NewUserRepository(database))
-	authHandler := handlers.NewAuthHandler(nil, nil, authService)
+	authHandler := handlers.NewAuthHandler(authService)
 
 	postService := services.NewPostService(repositories.NewPostRepository(database))
 	postHandler := handlers.NewPostHandler(postService, qu)
 
-	userHandler := handlers.NewUserHandler(repositories.NewUserRepository(database))
+	userService := services.NewUserService(repositories.NewUserRepository(database))
+	userHandler := handlers.NewUserHandler(userService)
 
 	r := gin.Default()
 

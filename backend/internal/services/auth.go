@@ -61,3 +61,7 @@ func (s *AuthService) Register(ctx context.Context, request dtos.RegisterRequest
 
 	return nil
 }
+
+func (s *AuthService) Logout(ctx context.Context, userId string) error {
+	return s.authRepo.RemoveSession(ctx, userId)
+}
